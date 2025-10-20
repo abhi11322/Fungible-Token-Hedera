@@ -13,10 +13,10 @@ const {
   } = require("@hashgraph/sdk");
   require("dotenv").config();
 
-// --- CONFIGURATION CONSTANTS ---
+
 const WHOLE_TOKENS_DECIMALS = 2;
 const INITIAL_SUPPLY_TOKENS = 1000;
-const RECIPIENT_A_INITIAL_TRANSFER = 50; // To match 950/50 split
+const RECIPIENT_A_INITIAL_TRANSFER = 50;
 const MINT_NEW_TOKENS = 500;
 const BULK_DISTRIBUTE_AMOUNT = 100; // Amount sent to Recipient A and B in Step 4
 
@@ -54,12 +54,10 @@ async function executeFungibleTokenProject() {
       throw new Error("Environment variables MY_ACCOUNT_ID and MY_PRIVATE_KEY must be present");
     }
 
-    // ⭐ CRITICAL FIX: Explicitly parse the private key as ECDSA ⭐
-    // .trim() removes any accidental whitespace which can also cause signature errors
+    rs
     const operatorKey = PrivateKey.fromStringECDSA(myPrivateKey.trim());
     const treasuryKey = operatorKey; 
-    const supplyKey = PrivateKey.generate(); // New Supply Key for the token
-
+    const supplyKey = PrivateKey.generate(); 
     const client = Client.forTestnet();
     client.setOperator(myAccountId, operatorKey);
     client.setDefaultMaxTransactionFee(new Hbar(100));
@@ -135,20 +133,14 @@ async function executeFungibleTokenProject() {
     console.log("✅ Initial transfer complete.");
 
 
-    // =========================================================================
-    // STEP 3: Verify Balances (Treasury: 950 / Recipient A: 50)
-    // =========================================================================
+ 
     console.log("\n==================================================");
     console.log("== STEP 3: Verification (950 Treasury / 50 Recipient) ==");
     await checkBalances(client, myAccountId, newAccountId, null, tokenId, TOKEN_SYMBOL); 
     console.log("==================================================");
 
 
-    // =========================================================================
-    // STEP 4: Mint additional tokens and distribute them to multiple accounts.
-    // =========================================================================
-
-    // --- 4A: Mint New Tokens (500 tokens added to Treasury) ---
+   
     const mintAmountUnit = toSmallestUnit(MINT_NEW_TOKENS); 
 
     console.log(`\n--- STEP 4A: Minting ${MINT_NEW_TOKENS} new ${TOKEN_SYMBOL} into Treasury ---`);
@@ -196,9 +188,9 @@ async function executeFungibleTokenProject() {
     console.log("✅ Bulk distribution successful.");
 
 
-    // =========================================================================
+ 
     // FINAL VERIFICATION
-    // =========================================================================
+  
     console.log("\n==================================================");
     console.log("== FINAL VERIFICATION ==");
     await checkBalances(client, myAccountId, newAccountId, newAccountId2, tokenId, TOKEN_SYMBOL);
